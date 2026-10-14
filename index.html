@@ -179,6 +179,31 @@
             background: rgba(56, 189, 248, 0.18);
         }
 
+        .telemetry-card.interactive {
+            cursor: pointer;
+        }
+
+        .telemetry-card.interactive:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            background: rgba(56, 189, 248, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .telemetry-card.dry-alert {
+            border-color: rgba(239, 68, 68, 0.85) !important;
+            background: rgba(239, 68, 68, 0.22) !important;
+            animation: pulse-dry 1.4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-dry {
+            0% {
+                box-shadow: 0 0 4px rgba(239, 68, 68, 0.25);
+            }
+            100% {
+                box-shadow: 0 0 16px rgba(239, 68, 68, 0.7);
+            }
+        }
+
         .telemetry-card .icon {
             font-size: 15px;
             margin-bottom: 1px;
@@ -542,14 +567,14 @@
             </div>
         </div>
         <div class="dashboard-heading">
-            <span>🌿 Your Orchids are Safe & Hydrated</span>
+            <span id="dashboard-heading-text">🌿 Your Orchids are Safe & Hydrated</span>
         </div>
 
         <div class="telemetry-grid">
-            <div class="telemetry-card" id="card-soil">
+            <div class="telemetry-card interactive" id="card-soil" onclick="toggleSoilMoisture()" title="Click to simulate lower / dry soil %">
                 <div class="icon">💧</div>
                 <div class="val" id="val-soil">68%</div>
-                <div class="lbl">Moist Soil</div>
+                <div class="lbl" id="lbl-soil">Moist Soil</div>
             </div>
             <div class="telemetry-card" id="card-sun">
                 <div class="icon">☀️</div>
@@ -576,6 +601,21 @@
             <div class="vacation-note" id="vacation-note">
                 Auto-cares for water & shade when you are busy or out of town
             </div>
+
+            <!-- Soil Moisture Simulation & Test Controls (User: "add option to make the soil % lower so that we can show how it works when its lower") -->
+            <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 8px; padding: 7px 9px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <span style="font-size: 9.5px; font-weight: 700; color: #94a3b8; letter-spacing: 0.4px;">🌱 SIMULATE SOIL %:</span>
+                    <span id="slider-moisture-val" style="font-size: 11px; font-weight: 800; color: #38bdf8;">68%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 7px;">
+                    <input type="range" id="soil-slider" min="15" max="95" value="68" step="1" oninput="setSoilMoisture(this.value)" style="flex: 1; accent-color: #38bdf8; cursor: pointer; height: 5px;">
+                    <button class="camera-btn" style="padding: 3px 8px; font-size: 10px; border-color: rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.15); color: #fca5a5;" onclick="toggleSoilMoisture()" id="btn-toggle-soil" title="Quick toggle between dry soil (28%) and moist soil (68%)">
+                        <span id="btn-toggle-soil-text">🏜️ Dry (28%)</span>
+                    </button>
+                </div>
+            </div>
+
             <div style="display: flex; gap: 6px;">
                 <button class="camera-btn" style="flex: 1; justify-content: center;" onclick="toggleSunIntensity()">
                     <span id="sun-btn-text">🌤️ Harsh Sun</span>
@@ -2119,10 +2159,7 @@
                     waterCoreMat.opacity = 0.45;
                     waterStreamMat.opacity = 0.0;
 
-                    currentSoilMoisture = 86;
-                    const val = document.getElementById("val-soil");
-                    val.innerText = "86%";
-                    val.style.color = "#10b981";
+                    setSoilMoisture(86);
                     showToast("Watering complete! Soil moisture restored to 86%.");
                 }
             }, 1000);
@@ -2219,20 +2256,93 @@
 
             // 2) Soil moisture autonomous drying & watering
             if (!isWatering && currentSoilMoisture > 38) {
-                currentSoilMoisture -= 5;
-                const valSoil = document.getElementById("val-soil");
-                if (valSoil) {
-                    valSoil.innerText = `${currentSoilMoisture}%`;
-                    if (currentSoilMoisture < 50) {
-                        valSoil.style.color = "#f59e0b";
-                    }
-                }
+                setSoilMoisture(Math.max(20, currentSoilMoisture - 5));
             }
 
             if (currentSoilMoisture <= 45 && !isWatering) {
                 showToast(`✈️ Away Auto-Care: Soil moisture dry (${currentSoilMoisture}%) -> Running pump 5s!`);
                 triggerWatering();
-                currentSoilMoisture = 86;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // SOIL MOISTURE SIMULATION LOGIC (Lower % Demonstration)
+        // -------------------------------------------------------------
+        function setSoilMoisture(val) {
+            val = parseInt(val, 10);
+            currentSoilMoisture = val;
+
+            const valSoil = document.getElementById("val-soil");
+            const lblSoil = document.getElementById("lbl-soil");
+            const cardSoil = document.getElementById("card-soil");
+            const heading = document.getElementById("dashboard-heading-text");
+            const slider = document.getElementById("soil-slider");
+            const sliderVal = document.getElementById("slider-moisture-val");
+            const toggleBtnText = document.getElementById("btn-toggle-soil-text");
+            const toggleBtn = document.getElementById("btn-toggle-soil");
+
+            if (slider && slider.value != val) slider.value = val;
+            if (sliderVal) sliderVal.innerText = `${val}%`;
+            if (valSoil) valSoil.innerText = `${val}%`;
+
+            if (val <= 45) {
+                // DRY SOIL STATE
+                if (valSoil) valSoil.style.color = "#f87171";
+                if (lblSoil) lblSoil.innerText = val <= 25 ? "CRITICAL DRY" : "DRY SOIL (LOW)";
+                if (cardSoil) cardSoil.classList.add("dry-alert");
+                if (heading) heading.innerText = "⚠️ Soil is Dry — Irrigation Needed!";
+                if (sliderVal) sliderVal.style.color = "#f87171";
+
+                if (toggleBtnText) toggleBtnText.innerText = "💧 Moist (68%)";
+                if (toggleBtn) {
+                    toggleBtn.style.borderColor = "rgba(56, 189, 248, 0.45)";
+                    toggleBtn.style.background = "rgba(56, 189, 248, 0.15)";
+                    toggleBtn.style.color = "#7dd3fc";
+                }
+
+                // 3D Visual Feedback: Lighter dry brown potting loam & Red pulsing sensor entry ring
+                if (typeof soilMat !== "undefined") soilMat.color.setHex(0x78563e);
+                if (typeof crumbMat !== "undefined") crumbMat.color.setHex(0x5f3f26);
+                if (typeof sensorRingMat !== "undefined") sensorRingMat.color.setHex(0xef4444);
+
+                // If Away Mode is ON, immediately auto-trigger pump
+                if (isVacationMode && !isWatering) {
+                    showToast(`✈️ Away Auto-Care: Soil is dry (${val}%) -> Automatically running pump 5s!`);
+                    setTimeout(() => {
+                        if (currentSoilMoisture <= 45 && !isWatering) {
+                            triggerWatering();
+                        }
+                    }, 800);
+                }
+            } else {
+                // MOIST / HYDRATED STATE
+                if (valSoil) valSoil.style.color = val >= 75 ? "#34d399" : "#ffffff";
+                if (lblSoil) lblSoil.innerText = val >= 75 ? "WELL WATERED" : "MOIST SOIL";
+                if (cardSoil) cardSoil.classList.remove("dry-alert");
+                if (heading) heading.innerText = "🌿 Your Orchids are Safe & Hydrated";
+                if (sliderVal) sliderVal.style.color = "#38bdf8";
+
+                if (toggleBtnText) toggleBtnText.innerText = "🏜️ Dry (28%)";
+                if (toggleBtn) {
+                    toggleBtn.style.borderColor = "rgba(239, 68, 68, 0.45)";
+                    toggleBtn.style.background = "rgba(239, 68, 68, 0.15)";
+                    toggleBtn.style.color = "#fca5a5";
+                }
+
+                // 3D Visual Feedback: Rich dark earthy potting loam & Emerald green sensor entry ring
+                if (typeof soilMat !== "undefined") soilMat.color.setHex(0x482d1b);
+                if (typeof crumbMat !== "undefined") crumbMat.color.setHex(0x3a2213);
+                if (typeof sensorRingMat !== "undefined") sensorRingMat.color.setHex(0x10b981);
+            }
+        }
+
+        function toggleSoilMoisture() {
+            if (currentSoilMoisture > 45) {
+                setSoilMoisture(28);
+                showToast("🏜️ Soil moisture lowered to 28% (Dry)! Watch capacitive sensor alert & dry soil response.");
+            } else {
+                setSoilMoisture(68);
+                showToast("🌱 Soil moisture restored to 68% (Moist).");
             }
         }
 
