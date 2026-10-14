@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bantay Halaman: Smart Plant Care System (Prototype Diorama)</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --blue-accent: #38bdf8;
+            --amber-accent: #f59e0b;
+            --bg-dark: #090d16;
+            --panel-bg: rgba(15, 23, 42, 0.85);
+            --border-line: rgba(56, 189, 248, 0.22);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #060911;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            color: #f1f5f9;
+        }
+
+        /* Top-Left Blueprint Header (Compact & Clean) */
+        #blueprint-header {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border-line);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            max-width: 340px;
+            z-index: 20;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+        }
+
+        #blueprint-header .tagline {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--blue-accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        #blueprint-header .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.35;
+                transform: scale(0.8);
+            }
+        }
+
+        #blueprint-header h1 {
+            font-size: 15px;
+            margin: 0 0 4px 0;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        #blueprint-header p {
+            font-size: 11.5px;
+            margin: 0;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .system-logic-pill {
+            margin-top: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px dashed rgba(56, 189, 248, 0.3);
+            font-size: 10.5px;
+            color: #bae6fd;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        /* Top-Right Mobile App UI Design (Sleek Elder-Friendly Card) */
+        #mobile-dashboard {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-line);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+            width: 310px;
+            z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        .dashboard-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .dashboard-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .dashboard-heading {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .telemetry-card {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 6px 4px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .telemetry-card.highlight {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.18);
+        }
+
+        .telemetry-card .icon {
+            font-size: 15px;
+            margin-bottom: 1px;
+        }
+
+        .telemetry-card .val {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .telemetry-card .lbl {
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+
+        /* Action Buttons */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-water {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-water:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            transform: translateY(-1px);
+        }
+
+        .btn-shade {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+        }
+
+        .btn-shade:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-1px);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-vacation {
+            background: linear-gradient(135deg, #4f46e5, #3730a3);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-vacation:hover {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            transform: translateY(-1px);
+        }
+
+        .btn-vacation.active {
+            background: linear-gradient(135deg, #059669, #047857);
+            border: 1px solid #34d399;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+        }
+
+        .vacation-note {
+            font-size: 9.5px;
+            color: #94a3b8;
+            line-height: 1.35;
+            padding: 2px 4px;
+            text-align: center;
+        }
+
+        /* Bottom Inspection & Camera Presets */
+        #bottom-panel {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border-line);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            z-index: 20;
+            max-width: 95vw;
+            overflow-x: auto;
+        }
+
+        .camera-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .camera-btn:hover,
+        .camera-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #60a5fa;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-toggle-labels {
+            background: rgba(30, 41, 59, 0.85);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #94a3b8;
+        }
+
+        .btn-toggle-labels:hover,
+        .btn-toggle-labels.active {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        /* 3D Component Callout Labels (Clean view by default, shown when toggled ON!) */
+        .component-label {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            pointer-events: auto;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            display: none;
+            /* Off by default */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+            transition: all 0.2s ease;
+            z-index: 12;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .component-label:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+            border-color: #10b981;
+            background: rgba(6, 78, 59, 0.95);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.7);
+        }
+
+        .component-label .label-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #38bdf8;
+            display: inline-block;
+        }
+
+        /* Sleek Dynamic Hover/Click Component Inspector Popup Card */
+        #inspector-card {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(16px);
+            border: 1px solid #38bdf8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            width: 260px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.7), 0 0 16px rgba(56, 189, 248, 0.25);
+            pointer-events: auto;
+            transform: translate(-50%, -125%);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 30;
+        }
+
+        #inspector-card.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -115%);
+        }
+
+        #inspector-card::after {
+            content: "";
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #38bdf8;
+        }
+
+        .inspector-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .inspector-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            text-transform: uppercase;
+        }
+
+        .inspector-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 2px 0 4px 0;
+        }
+
+        .inspector-desc {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.35;
+            margin-bottom: 6px;
+        }
+
+        .inspector-stats {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 10px;
+            color: #a7f3d0;
+            font-family: ui-monospace, monospace;
+            border-left: 2px solid #10b981;
+        }
+
+        .inspector-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .inspector-close-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Status notification toast */
+        #status-toast {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(15px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+            font-size: 11.5px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            z-index: 30;
+        }
+
+        #status-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            #blueprint-header {
+                max-width: calc(100vw - 32px);
+            }
+
+            #mobile-dashboard {
+                top: auto;
+                bottom: 76px;
+                right: 16px;
+                left: 16px;
+                width: auto;
+            }
+
+            #bottom-panel {
+                bottom: 8px;
+                width: calc(100% - 16px);
+                justify-content: flex-start;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+    <!-- Top-Left Blueprint Header -->
+    <div id="blueprint-header">
+        <div class="tagline">
+            <span class="pulse-dot"></span> Prototype Blueprint Diorama
+        </div>
+        <h1>BANTAY HALAMAN</h1>
+        <div class="system-logic-pill">
+            <strong>LOGIC:</strong> Soil Dry &rarr; Pump 5s &nbsp;|&nbsp; Harsh Sun &rarr; Deploy Shade
+        </div>
+    </div>
+
+    <!-- Top-Right Mobile App UI Design (From Blueprint) -->
+    <div id="mobile-dashboard">
+        <div class="dashboard-header-row">
+            <span class="dashboard-title">Mobile App UI Design</span>
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <span class="status-badge" id="badge-bloom"
+                    style="background: rgba(219, 39, 119, 0.18); color: #f472b6; border-color: rgba(219, 39, 119, 0.4);">🌸Orchid</span>
+                <span class="status-badge" id="badge-away"
+                    style="display: none; background: rgba(99, 102, 241, 0.22); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.45);">✈️ Away Mode</span>
+                <span class="status-badge">Online ●</span>
+            </div>
+        </div>
+        <div class="dashboard-heading">
+            <span>🌿 Your Orchids are Safe & Hydrated</span>
+        </div>
+
+        <div class="telemetry-grid">
+            <div class="telemetry-card" id="card-soil">
+                <div class="icon">💧</div>
+                <div class="val" id="val-soil">68%</div>
+                <div class="lbl">Moist Soil</div>
+            </div>
+            <div class="telemetry-card" id="card-sun">
+                <div class="icon">☀️</div>
+                <div class="val" id="val-sun">Normal</div>
+                <div class="lbl">Good Light</div>
+            </div>
+            <div class="telemetry-card" id="card-shade">
+                <div class="icon">🛡️</div>
+                <div class="val" id="val-shade" style="color: #38bdf8;">Deployed</div>
+                <div class="lbl">180° Shade</div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <button class="btn-action btn-water" id="btn-water" onclick="triggerWatering()">
+                <span>💧 Run Pump 5s (Water Plant)</span>
+            </button>
+            <button class="btn-action btn-shade" id="btn-shade" onclick="toggleShade()">
+                <span id="btn-shade-text">☀️ Retract 180° Shade</span>
+            </button>
+            <button class="btn-action btn-vacation" id="btn-vacation" onclick="toggleVacationMode()">
+                <span id="btn-vacation-text">✈️ Away / Vacation Mode: OFF</span>
+            </button>
+            <div class="vacation-note" id="vacation-note">
+                Auto-cares for water & shade when you are busy or out of town
+            </div>
+            <div style="display: flex; gap: 6px;">
+                <button class="camera-btn" style="flex: 1; justify-content: center;" onclick="toggleSunIntensity()">
+                    <span id="sun-btn-text">🌤️ Harsh Sun</span>
+                </button>
+                <button class="camera-btn" style="flex: 1; justify-content: center;" id="btn-auto-mode"
+                    onclick="toggleAutoMode()">
+                    <span>🤖 Auto: ON</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Camera Navigation & Hotspots Toggle -->
+    <div id="bottom-panel">
+        <span style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-right: 4px;">FOCUS:</span>
+        <button class="camera-btn active" onclick="focusCamera('overview', this)">🔍 Overview</button>
+        <button class="camera-btn" onclick="focusCamera('orchid', this)">🌸 Orchid Plant</button>
+        <button class="camera-btn" onclick="focusCamera('soil-sensor', this)">🌱 Soil Sensor</button>
+        <button class="camera-btn" onclick="focusCamera('hose-emitter', this)">➰ Hose & Emitter</button>
+        <button class="camera-btn" onclick="focusCamera('servo', this)">⚙️ Servo & Cable</button>
+        <button class="camera-btn" onclick="focusCamera('pump', this)">💧 Reservoir & Pump</button>
+        <button class="camera-btn" onclick="focusCamera('esp32', this)">🧠 ESP32</button>
+        <button class="camera-btn btn-toggle-labels" id="btn-labels" onclick="toggleAllLabels()">🏷️ All Labels:
+            OFF</button>
+    </div>
+
+    <!-- Dynamic Hover/Click Inspection Card -->
+    <div id="inspector-card">
+        <button class="inspector-close-btn" onclick="closeInspector()">✕</button>
+        <div class="inspector-title-row">
+            <span class="inspector-badge" id="insp-badge">SENSOR</span>
+        </div>
+        <div class="inspector-name" id="insp-name">Component Name</div>
+        <div class="inspector-desc" id="insp-desc">Component function description...</div>
+        <div class="inspector-stats" id="insp-stats">Telemetry: Active</div>
+    </div>
+
+    <div id="status-toast">Pump activated: Water flowing through underfloor hose...</div>
+    <div id="labels-container"></div>
+
+    <script>
+        // -------------------------------------------------------------
+        // 1. Procedural High-Detail Textures
+        // -------------------------------------------------------------
+
+        // Wood texture for Baseboard Diorama with Underfloor Conduit Slot
+        function createWoodTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#c59d70';
+            ctx.fillRect(0, 0, 1024, 1024);
+
+            for (let i = 0; i < 400; i++) {
+                ctx.fillStyle = `rgba(${160 + Math.random() * 40}, ${115 + Math.random() * 30}, ${75 + Math.random() * 20}, 0.15)`;
+                const y = Math.random() * 1024;
+                ctx.fillRect(0, y, 1024, Math.random() * 4 + 1);
+            }
+
+            // Subtle wood grain wave
+            ctx.strokeStyle = 'rgba(140, 95, 60, 0.12)';
+            ctx.lineWidth = 3;
+            for (let j = 0; j < 40; j++) {
+                ctx.beginPath();
+                const startY = j * 26;
+                ctx.moveTo(0, startY);
+                ctx.bezierCurveTo(340, startY + 15, 680, startY - 15, 1024, startY + 5);
+                ctx.stroke();
+            }
+
+            // Diorama border perimeter bevel
+            ctx.strokeStyle = 'rgba(80, 50, 30, 0.35)';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(12, 12, 1000, 1000);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            return texture;
+        }
+
+        // Capacitive Soil Moisture Sensor v1.2 PCB texture
+        function createSoilSensorTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Matte black PCB base
+            ctx.fillStyle = '#16191f';
+            ctx.fillRect(0, 0, 512, 1024);
+
+            // Silkscreen white border
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(18, 18, 476, 988);
+
+            // Top section: Electronics head
+            ctx.fillStyle = '#22262e';
+            ctx.fillRect(28, 28, 456, 290);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 22px ui-monospace, monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('CAPACITIVE SOIL', 256, 75);
+            ctx.fillText('MOISTURE SENSOR', 256, 105);
+            ctx.font = 'bold 30px ui-monospace, monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('v1.2', 256, 150);
+
+            // Pinout labels
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 20px monospace';
+            ctx.fillText('GND  VCC  AOUT', 256, 270);
+
+            // Capacitive Sensing Blade Traces (Gold-plated copper outline)
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.roundRect(45, 345, 422, 620, 24);
+            ctx.stroke();
+
+            // Depth measurement ticks (Ruler marks)
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px monospace';
+            for (let d = 0; d <= 8; d++) {
+                const y = 375 + d * 68;
+                ctx.fillRect(45, y, 45, 3);
+                ctx.fillRect(422, y, 45, 3);
+                ctx.fillText(`${d * 10}mm`, 256, y + 6);
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // Rich Brown Potting Soil Texture (Authentic earthy organic loam - User: brown not white)
+        function createSoilTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Rich warm earthy brown base
+            ctx.fillStyle = '#3a2213';
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Soil granules & humus specks with warm brown tones
+            for (let i = 0; i < 4200; i++) {
+                const r = 52 + Math.random() * 32;
+                const g = 32 + Math.random() * 20;
+                const b = 17 + Math.random() * 12;
+                ctx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const rad = Math.random() * 3 + 1;
+                ctx.beginPath();
+                ctx.arc(x, y, rad, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Darker rich peat/compost organic grains (Zero white specks!)
+            for (let j = 0; j < 1500; j++) {
+                ctx.fillStyle = 'rgba(38, 20, 10, 0.65)';
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.random() * 2.5 + 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(3, 3);
+            return texture;
+        }
+
+        // Shade Cloth Mesh Texture (High-contrast agricultural weave)
+        function createMeshTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Deep slate-charcoal mesh fabric
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.98)';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Perforations
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            for (let x = 0; x < 256; x += 16) {
+                for (let y = 0; y < 256; y += 16) {
+                    ctx.fillRect(x + 2, y + 2, 12, 12);
+                }
+            }
+
+            // High-visibility agricultural shade filaments
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.9)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i <= 256; i += 16) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0); ctx.lineTo(i, 256);
+                ctx.moveTo(0, i); ctx.lineTo(256, i);
+                ctx.stroke();
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(12, 8);
+            return texture;
+        }
+
+        // -------------------------------------------------------------
+        // 2. Three.js Scene, Camera, Lights & Renderer Setup
+        // -------------------------------------------------------------
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x080c18);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(5.2, 4.4, 5.4);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 1.15, 0);
+        controls.maxPolarAngle = Math.PI / 2 - 0.04;
+        controls.minDistance = 1.2;
+        controls.maxDistance = 12;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.7);
+        scene.add(ambientLight);
+
+        // Sunlight (Directional)
+        const sunLight = new THREE.DirectionalLight(0xfffaed, 1.25);
+        sunLight.position.set(4, 8, 4.5);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.bias = -0.0004;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 18;
+        sunLight.shadow.camera.left = -3.5;
+        sunLight.shadow.camera.right = 3.5;
+        sunLight.shadow.camera.top = 3.5;
+        sunLight.shadow.camera.bottom = -3.5;
+        scene.add(sunLight);
+
+        // Fill Light
+        const fillLight = new THREE.PointLight(0x38bdf8, 0.55, 12);
+        fillLight.position.set(-4, 3, -3);
+        scene.add(fillLight);
+
+        // Blueprint Grid Floor
+        const gridHelper = new THREE.GridHelper(12, 24, 0x1e3a5f, 0x0f1c30);
+        gridHelper.position.y = -0.01;
+        scene.add(gridHelper);
+
+        // -------------------------------------------------------------
+        // 3. DIORAMA BASEBOARD WITH UNDERFLOOR ROUTING CHANNEL
+        // -------------------------------------------------------------
+        const woodTexture = createWoodTexture();
+        const baseMat = new THREE.MeshStandardMaterial({
+            map: woodTexture,
+            roughness: 0.55,
+            metalness: 0.1
+        });
+
+        // Main Wooden Plinth
+        const baseGeo = new THREE.BoxGeometry(4.8, 0.22, 3.8);
+        const dioramaBase = new THREE.Mesh(baseGeo, baseMat);
+        dioramaBase.position.y = 0.11;
+        dioramaBase.receiveShadow = true;
+        dioramaBase.castShadow = true;
+        scene.add(dioramaBase);
+
+        // Rubber Footings
+        const footGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.05, 16);
+        const footMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 });
+        [
+            [-2.2, -1.7], [2.2, -1.7],
+            [-2.2, 1.7], [2.2, 1.7]
+        ].forEach(([x, z]) => {
+            const foot = new THREE.Mesh(footGeo, footMat);
+            foot.position.set(x, 0.025, z);
+            scene.add(foot);
+        });
+
+        // Floor Pass-Through Hole Rings (Brass / Rubber grommets for the underfloor hose)
+        const grommetMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.2 });
+
+        // Grommet A: Where hose dips into the floor below the water reservoir cup (outside arch)
+        const grommetAGeo = new THREE.TorusGeometry(0.05, 0.014, 8, 20);
+        const grommetA = new THREE.Mesh(grommetAGeo, grommetMat);
+        grommetA.rotation.x = Math.PI / 2;
+        grommetA.position.set(-1.88, 0.221, 0.35);
+        scene.add(grommetA);
+
+        // Grommet B: Where hose emerges from floor strictly outside the plant vase
+        const grommetB = grommetA.clone();
+        grommetB.position.set(-0.54, 0.221, 0.22);
+        scene.add(grommetB);
+
+        // Underfloor Inspection Trench (Frosted Acrylic Window on board showing hose running beneath!)
+        const trenchGeo = new THREE.PlaneGeometry(1.36, 0.16);
+        const trenchMat = new THREE.MeshPhysicalMaterial({
+            color: 0x38bdf8,
+            transmission: 0.75,
+            opacity: 0.45,
+            transparent: true,
+            roughness: 0.3
+        });
+        const trench = new THREE.Mesh(trenchGeo, trenchMat);
+        trench.rotation.x = -Math.PI / 2;
+        trench.rotation.z = -0.097;
+        trench.position.set(-1.21, 0.222, 0.285);
+        scene.add(trench);
+
+        // -------------------------------------------------------------
+        // 4. CRAFT WIRE / WOODEN DOWEL ARCH FRAME
+        // -------------------------------------------------------------
+        const frameGroup = new THREE.Group();
+        scene.add(frameGroup);
+
+        const dowelMat = new THREE.MeshStandardMaterial({
+            color: 0xc89d6c,
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        const wireClipMat = new THREE.MeshStandardMaterial({
+            color: 0x475569,
+            metalness: 0.7,
+            roughness: 0.3
+        });
+
+        function createArchCurve(zOffset) {
+            return new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-1.5, 0.22, zOffset),
+                new THREE.Vector3(-1.5, 1.6, zOffset),
+                new THREE.Vector3(-0.9, 2.3, zOffset),
+                new THREE.Vector3(0, 2.65, zOffset),
+                new THREE.Vector3(0.9, 2.3, zOffset),
+                new THREE.Vector3(1.5, 1.6, zOffset),
+                new THREE.Vector3(1.5, 0.22, zOffset)
+            ]);
+        }
+
+        const frontCurve = createArchCurve(0.9);
+        const rearCurve = createArchCurve(-0.9);
+
+        const archGeoFront = new THREE.TubeGeometry(frontCurve, 64, 0.038, 12, false);
+        const archFront = new THREE.Mesh(archGeoFront, dowelMat);
+        archFront.castShadow = true;
+        frameGroup.add(archFront);
+
+        const archGeoRear = new THREE.TubeGeometry(rearCurve, 64, 0.038, 12, false);
+        const archRear = new THREE.Mesh(archGeoRear, dowelMat);
+        archRear.castShadow = true;
+        frameGroup.add(archRear);
+
+        // Longitudinal connecting dowels
+        const longitudinalConfigs = [
+            { x: 0, y: 2.65 },
+            { x: -1.5, y: 1.55 },
+            { x: 1.5, y: 1.55 },
+            { x: -0.9, y: 2.28 },
+            { x: 0.9, y: 2.28 }
+        ];
+
+        longitudinalConfigs.forEach(cfg => {
+            const railGeo = new THREE.CylinderGeometry(0.026, 0.026, 1.84, 12);
+            const rail = new THREE.Mesh(railGeo, dowelMat);
+            rail.rotation.x = Math.PI / 2;
+            rail.position.set(cfg.x, cfg.y, 0);
+            rail.castShadow = true;
+            frameGroup.add(rail);
+
+            [-0.9, 0.9].forEach(z => {
+                const jointGeo = new THREE.TorusGeometry(0.04, 0.012, 8, 16);
+                const joint = new THREE.Mesh(jointGeo, wireClipMat);
+                joint.position.set(cfg.x, cfg.y, z);
+                frameGroup.add(joint);
+            });
+        });
+
+        // -------------------------------------------------------------
+        // 5. AUTO-SHADE SYSTEM: SG90 SERVO & FISHING LINE PULL CABLE
+        // -------------------------------------------------------------
+        const shadeSystemGroup = new THREE.Group();
+        scene.add(shadeSystemGroup);
+
+        // SG90 Micro Servo Model
+        const servoGroup = new THREE.Group();
+        servoGroup.position.set(1.5, 1.85, 0.45);
+        shadeSystemGroup.add(servoGroup);
+
+        const servoCaseMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0284c7,
+            transmission: 0.5,
+            opacity: 0.9,
+            transparent: true,
+            roughness: 0.2,
+            metalness: 0.1
+        });
+        const servoBodyGeo = new THREE.BoxGeometry(0.18, 0.28, 0.32);
+        const servoBody = new THREE.Mesh(servoBodyGeo, servoCaseMat);
+        servoGroup.add(servoBody);
+
+        const flangeGeo = new THREE.BoxGeometry(0.19, 0.04, 0.46);
+        const flange = new THREE.Mesh(flangeGeo, servoCaseMat);
+        flange.position.y = 0.04;
+        servoGroup.add(flange);
+
+        // Brass gear shaft
+        const shaftGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.06, 12);
+        const shaftMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.3 });
+        const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+        shaft.position.set(0, 0.16, 0.08);
+        servoGroup.add(shaft);
+
+        // Rotating White Servo Horn
+        const hornGroup = new THREE.Group();
+        hornGroup.position.set(0, 0.18, 0.08);
+        servoGroup.add(hornGroup);
+
+        const hornMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 });
+        const hornHub = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.02, 16), hornMat);
+        hornGroup.add(hornHub);
+
+        const hornArm = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.015, 0.18), hornMat);
+        hornArm.position.z = 0.05;
+        hornGroup.add(hornArm);
+
+        // Pull Cable eyelets on arch frame
+        const eyeletGeo = new THREE.TorusGeometry(0.03, 0.008, 8, 16);
+        const eyelet = new THREE.Mesh(eyeletGeo, wireClipMat);
+        eyelet.rotation.y = Math.PI / 2;
+        eyelet.position.set(0.95, 2.32, 0.45);
+        shadeSystemGroup.add(eyelet);
+
+        const apexEyelet = eyelet.clone();
+        apexEyelet.position.set(0.05, 2.67, 0.45);
+        shadeSystemGroup.add(apexEyelet);
+
+        const leftEyelet = eyelet.clone();
+        leftEyelet.position.set(-0.95, 2.32, 0.45);
+        shadeSystemGroup.add(leftEyelet);
+
+        // Fishing Line / Pull Cable
+        const cableMat = new THREE.LineBasicMaterial({
+            color: 0x94a3b8,
+            linewidth: 2,
+            transparent: true,
+            opacity: 0.85
+        });
+
+        let cableLine;
+        function updatePullCable(hornTipPos, shadeFrontDowelPos, currentT) {
+            if (cableLine) shadeSystemGroup.remove(cableLine);
+            const points = [shadeFrontDowelPos];
+
+            // If the leading edge hasn't reached the apex yet, route cable over apex eyelet
+            if (currentT < 0.50) {
+                points.push(new THREE.Vector3(0.05, 2.68, 0.45));
+            }
+            // If the leading edge hasn't reached the right shoulder yet
+            if (currentT < 0.78) {
+                points.push(new THREE.Vector3(0.95, 2.32, 0.45));
+            }
+            points.push(new THREE.Vector3(1.48, 2.05, 0.45));
+            points.push(hornTipPos);
+
+            const cableGeo = new THREE.BufferGeometry().setFromPoints(points);
+            cableLine = new THREE.Line(cableGeo, cableMat);
+            shadeSystemGroup.add(cableLine);
+        }
+
+        // Shade Cloth Mesh Canopy (Whole 180° arch coverage)
+        const meshTexture = createMeshTexture();
+        const shadeClothMat = new THREE.MeshStandardMaterial({
+            map: meshTexture,
+            color: 0x64748b, // High visibility crisp slate mesh
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.95,
+            roughness: 0.55,
+            metalness: 0.15
+        });
+
+        const frontDowelGeo = new THREE.CylinderGeometry(0.024, 0.024, 1.80, 12);
+        const frontDowel = new THREE.Mesh(frontDowelGeo, dowelMat);
+        frontDowel.rotation.x = Math.PI / 2;
+        shadeSystemGroup.add(frontDowel);
+
+        let shadeMesh;
+        // Default to fully deployed 180° coverage
+        let shadeClothProgress = 1.0;
+        let targetClothProgress = 1.0;
+
+        function rebuildShadeCloth(progress) {
+            if (shadeMesh) shadeSystemGroup.remove(shadeMesh);
+
+            // Left arch base at t = 0.04 (180° left)
+            const minT = 0.04;
+            // When progress = 0.0 (retracted), gathers at left base (t = 0.12)
+            // When progress = 1.0 (deployed), extends across the WHOLE 180° to right base (t = 0.96)
+            const maxT = 0.12 + (0.84 * progress);
+
+            const segments = 48; // Smooth 180-degree curve
+            const geom = new THREE.PlaneGeometry(1, 1, 1, segments);
+            const posAttr = geom.attributes.position;
+            const uvAttr = geom.attributes.uv;
+
+            for (let i = 0; i <= segments; i++) {
+                const t = minT + (maxT - minT) * (i / segments);
+                const pFront = frontCurve.getPoint(t);
+                const pRear = rearCurve.getPoint(t);
+
+                // Row i: rear vertex & front vertex
+                posAttr.setXYZ(i * 2, pRear.x, pRear.y, pRear.z + 0.03);
+                uvAttr.setXY(i * 2, 0, (i / segments) * 6 * progress);
+
+                posAttr.setXYZ(i * 2 + 1, pFront.x, pFront.y, pFront.z - 0.03);
+                uvAttr.setXY(i * 2 + 1, 1, (i / segments) * 6 * progress);
+            }
+
+            posAttr.needsUpdate = true;
+            uvAttr.needsUpdate = true;
+            geom.computeVertexNormals();
+
+            shadeMesh = new THREE.Mesh(geom, shadeClothMat);
+            shadeMesh.castShadow = true;
+            shadeMesh.receiveShadow = true;
+            shadeSystemGroup.add(shadeMesh);
+
+            const leadingPoint = frontCurve.getPoint(maxT);
+            frontDowel.position.set(leadingPoint.x, leadingPoint.y, 0);
+
+            const hornTip = new THREE.Vector3();
+            hornArm.getWorldPosition(hornTip);
+            if (hornTip.lengthSq() < 0.001) {
+                hornTip.set(1.5, 2.03, 0.53);
+            }
+            const dowelCableAnchor = new THREE.Vector3(leadingPoint.x, leadingPoint.y, 0.45);
+            updatePullCable(hornTip, dowelCableAnchor, maxT);
+        }
+
+        rebuildShadeCloth(1.0);
+
+        // -------------------------------------------------------------
+        // 6. ELEGANT POTTED PLANT: VASE, DARK SOIL & BLOOMING ORCHIDS
+        // -------------------------------------------------------------
+        const plantGroup = new THREE.Group();
+        plantGroup.position.set(0.1, 0, 0.05);
+        scene.add(plantGroup);
+
+        // Ceramic / Terracotta Planter Vase
+        const potMat = new THREE.MeshStandardMaterial({
+            color: 0xc27845,
+            roughness: 0.65,
+            metalness: 0.05
+        });
+
+        // Upright, properly proportioned vase
+        const potBodyGeo = new THREE.CylinderGeometry(0.56, 0.40, 0.85, 32);
+        const potBody = new THREE.Mesh(potBodyGeo, potMat);
+        potBody.position.y = 0.645;
+        potBody.castShadow = true;
+        potBody.receiveShadow = true;
+        plantGroup.add(potBody);
+
+        // Upper Molded Rim
+        const rimGeo = new THREE.CylinderGeometry(0.60, 0.58, 0.12, 32);
+        const potRim = new THREE.Mesh(rimGeo, potMat);
+        potRim.position.y = 1.02;
+        potRim.castShadow = true;
+        plantGroup.add(potRim);
+
+        // Rich Brown Potting Soil (User: "make the soil part brown not white")
+        const soilTexture = createSoilTexture();
+        const soilGeo = new THREE.CylinderGeometry(0.53, 0.50, 0.08, 32);
+        const soilMat = new THREE.MeshStandardMaterial({
+            map: soilTexture,
+            color: 0x482d1b, // Rich warm earthy brown potting loam
+            roughness: 0.98,
+            metalness: 0.0
+        });
+        const soilMesh = new THREE.Mesh(soilGeo, soilMat);
+        soilMesh.position.y = 1.00; // Recessed slightly inside the rim
+        soilMesh.receiveShadow = true;
+        plantGroup.add(soilMesh);
+
+        // Brown organic soil crumb particles on top (Zero white particles)
+        const crumbMat = new THREE.MeshStandardMaterial({ color: 0x3a2213, roughness: 1.0 });
+        for (let c = 0; c < 30; c++) {
+            const crAngle = Math.random() * Math.PI * 2;
+            const crDist = Math.random() * 0.44;
+            const crumb = new THREE.Mesh(new THREE.DodecahedronGeometry(0.015 + Math.random() * 0.015), crumbMat);
+            crumb.position.set(Math.cos(crAngle) * crDist, 1.04, Math.sin(crAngle) * crDist);
+            plantGroup.add(crumb);
+        }
+
+        // Moist Soil Wet Ring (Animated expansion during watering)
+        const wetRingGeo = new THREE.RingGeometry(0.03, 0.24, 24);
+        const wetRingMat = new THREE.MeshBasicMaterial({
+            color: 0x1e3a5f, // Darker wet soil blue-brown sheen
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.0
+        });
+        const wetRing = new THREE.Mesh(wetRingGeo, wetRingMat);
+        wetRing.rotation.x = -Math.PI / 2;
+        wetRing.position.set(-0.10, 1.045, 0.12);
+        plantGroup.add(wetRing);
+
+        // Orchid Stem & Support Stake (Strictly rooted above pot level!)
+        const stemMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.45 });
+        const stemCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0, 1.00, 0),
+            new THREE.Vector3(0.03, 1.35, 0.02),
+            new THREE.Vector3(0.06, 1.68, 0.04),
+            new THREE.Vector3(0.04, 1.98, 0.02)
+        ]);
+        const stemGeo = new THREE.TubeGeometry(stemCurve, 24, 0.015, 8, false);
+        const stem = new THREE.Mesh(stemGeo, stemMat);
+        plantGroup.add(stem);
+
+        // Natural Bamboo Orchid Stake & Support Clip
+        const stakeMat = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.8 });
+        const stake = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.05, 8), stakeMat);
+        stake.position.set(-0.02, 1.48, -0.02);
+        plantGroup.add(stake);
+
+        const clipMat = new THREE.MeshStandardMaterial({ color: 0x166534 });
+        [1.35, 1.65].forEach(ch => {
+            const clip = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 6, 12), clipMat);
+            clip.position.set(0.01, ch, 0.01);
+            clip.rotation.x = Math.PI / 2;
+            plantGroup.add(clip);
+        });
+
+        // Healthy Orchid Leaves at base of stem hugging the pot rim
+        // (Positioned strictly on top of the pot at y >= 1.03, ZERO leaves near floor!)
+        const leafMat = new THREE.MeshStandardMaterial({
+            color: 0x166534,
+            roughness: 0.35,
+            metalness: 0.08,
+            side: THREE.DoubleSide
+        });
+
+        function createOrchidLeafMesh(angle, length, archHeight) {
+            const leafGroup = new THREE.Group();
+            leafGroup.position.set(0, 1.03, 0); // Rooted strictly on top of pot soil
+            leafGroup.rotation.y = angle;
+            const pts = [
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(length * 0.35, archHeight, 0),
+                new THREE.Vector3(length * 0.70, archHeight * 0.75, 0),
+                new THREE.Vector3(length, 0.01, 0)
+            ];
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const tubeGeo = new THREE.TubeGeometry(curve, 18, 0.045, 8, false);
+            // Scale locally in Y and Z to flatten like thick succulent orchid foliage
+            tubeGeo.scale(1.0, 0.20, 1.6);
+            const mesh = new THREE.Mesh(tubeGeo, leafMat);
+            mesh.castShadow = true;
+            leafGroup.add(mesh);
+            return leafGroup;
+        }
+
+        [
+            { angle: 0.35, length: 0.52, arch: 0.11 },
+            { angle: 1.85, length: 0.48, arch: 0.09 },
+            { angle: 3.45, length: 0.54, arch: 0.12 },
+            { angle: 4.95, length: 0.46, arch: 0.08 }
+        ].forEach(cfg => {
+            plantGroup.add(createOrchidLeafMesh(cfg.angle, cfg.length, cfg.arch));
+        });
+
+        // AUTHENTIC ORCHID BLOSSOMS
+        // (Realistic broad rounded petals + vibrant fuchsia lip, NO starfish cones, NO blooming animation!)
+        const orchidBlossoms = [];
+
+        const petalMat = new THREE.MeshStandardMaterial({
+            color: 0xfff0f7, // Soft velvety white with delicate rose blush
+            roughness: 0.32,
+            metalness: 0.05,
+            side: THREE.DoubleSide
+        });
+        const lipMat = new THREE.MeshStandardMaterial({
+            color: 0xc026d3, // Vibrant orchid magenta/fuchsia
+            roughness: 0.28,
+            metalness: 0.12,
+            side: THREE.DoubleSide
+        });
+        const throatMat = new THREE.MeshStandardMaterial({
+            color: 0x9d174d, // Deep crimson throat interior
+            roughness: 0.3
+        });
+        const pollenMat = new THREE.MeshStandardMaterial({
+            color: 0xfacc15, // Golden yellow pollen crest
+            roughness: 0.3
+        });
+
+        function createRealisticOrchidFlower(height, sideAngle) {
+            const blossom = new THREE.Group();
+            blossom.position.set(Math.sin(sideAngle) * 0.07, height, Math.cos(sideAngle) * 0.07);
+            blossom.rotation.y = sideAngle * 0.7;
+
+            // 1) Curved Pedicel connecting to stem
+            const pedCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(Math.sin(sideAngle) * 0.03, 0.02, 0.04),
+                new THREE.Vector3(Math.sin(sideAngle) * 0.06, 0.04, 0.08)
+            ]);
+            const pedMesh = new THREE.Mesh(new THREE.TubeGeometry(pedCurve, 8, 0.007, 6, false), stemMat);
+            blossom.add(pedMesh);
+
+            const flowerHead = new THREE.Group();
+            flowerHead.position.set(Math.sin(sideAngle) * 0.06, 0.04, 0.08);
+            blossom.add(flowerHead);
+
+            // 2) Top Dorsal Sepal (Rounded soft oval petal pointing UP)
+            const dorsalGeo = new THREE.SphereGeometry(0.065, 16, 12);
+            dorsalGeo.scale(1.0, 0.16, 1.4);
+            const dorsalSepal = new THREE.Mesh(dorsalGeo, petalMat);
+            dorsalSepal.position.set(0, 0.065, 0.01);
+            dorsalSepal.rotation.x = -0.22;
+            flowerHead.add(dorsalSepal);
+
+            // 3) Left Lateral Wing Petal (Broad, elegant rounded butterfly petal)
+            const leftPetalGeo = new THREE.SphereGeometry(0.076, 16, 12);
+            leftPetalGeo.scale(1.45, 0.16, 1.15);
+            const leftPetal = new THREE.Mesh(leftPetalGeo, petalMat);
+            leftPetal.position.set(-0.075, 0.02, 0.015);
+            leftPetal.rotation.set(-0.15, 0.20, 0.32);
+            flowerHead.add(leftPetal);
+
+            // 4) Right Lateral Wing Petal (Broad rounded butterfly petal)
+            const rightPetalGeo = new THREE.SphereGeometry(0.076, 16, 12);
+            rightPetalGeo.scale(1.45, 0.16, 1.15);
+            const rightPetal = new THREE.Mesh(rightPetalGeo, petalMat);
+            rightPetal.position.set(0.075, 0.02, 0.015);
+            rightPetal.rotation.set(-0.15, -0.20, -0.32);
+            flowerHead.add(rightPetal);
+
+            // 5) Two Lower Lateral Sepals (Point angled downward-left and downward-right)
+            const lowerSepalGeo = new THREE.SphereGeometry(0.062, 16, 12);
+            lowerSepalGeo.scale(0.92, 0.16, 1.35);
+
+            const leftLower = new THREE.Mesh(lowerSepalGeo, petalMat);
+            leftLower.position.set(-0.048, -0.055, 0.005);
+            leftLower.rotation.set(-0.12, 0.18, -0.65);
+            flowerHead.add(leftLower);
+
+            const rightLower = new THREE.Mesh(lowerSepalGeo, petalMat);
+            rightLower.position.set(0.048, -0.055, 0.005);
+            rightLower.rotation.set(-0.12, -0.18, 0.65);
+            flowerHead.add(rightLower);
+
+            // 6) Orchid Labellum (Lip) - Vibrant Fuchsia Central Throat & Lower Lobes
+            const lipGroup = new THREE.Group();
+            lipGroup.position.set(0, -0.015, 0.025);
+
+            // Trumpet/throat
+            const throat = new THREE.Mesh(new THREE.SphereGeometry(0.028, 12, 12), throatMat);
+            throat.scale.set(1.0, 0.7, 1.3);
+            lipGroup.add(throat);
+
+            // Flared Lower Lip Lobe
+            const lobeGeo = new THREE.SphereGeometry(0.044, 14, 10);
+            lobeGeo.scale(1.25, 0.18, 1.2);
+            const lowerLobe = new THREE.Mesh(lobeGeo, lipMat);
+            lowerLobe.position.set(0, -0.032, 0.03);
+            lowerLobe.rotation.x = 0.45;
+            lipGroup.add(lowerLobe);
+
+            // Two Small Upper Side Horn Lobes
+            const hornGeo = new THREE.SphereGeometry(0.022, 10, 8);
+            hornGeo.scale(0.8, 0.3, 1.2);
+            const leftHorn = new THREE.Mesh(hornGeo, lipMat);
+            leftHorn.position.set(-0.026, -0.005, 0.02);
+            leftHorn.rotation.z = 0.55;
+            lipGroup.add(leftHorn);
+
+            const rightHorn = new THREE.Mesh(hornGeo, lipMat);
+            rightHorn.position.set(0.026, -0.005, 0.02);
+            rightHorn.rotation.z = -0.55;
+            lipGroup.add(rightHorn);
+
+            // Center Column & Golden Stamen Pollen Crest
+            const pollen = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 8), pollenMat);
+            pollen.position.set(0, 0.012, 0.026);
+            lipGroup.add(pollen);
+
+            flowerHead.add(lipGroup);
+
+            plantGroup.add(blossom);
+            orchidBlossoms.push({ group: blossom, flowerHead: flowerHead, height: height });
+        }
+
+        // 4 Full, Graceful Orchid Blossoms Along the Stem
+        [
+            { h: 1.48, angle: 0.65 },
+            { h: 1.65, angle: -0.65 },
+            { h: 1.82, angle: 0.55 },
+            { h: 1.96, angle: -0.50 }
+        ].forEach(item => {
+            createRealisticOrchidFlower(item.h, item.angle);
+        });
+
+        // Top Petite Blossom Bud at Tip
+        const topBudGroup = new THREE.Group();
+        topBudGroup.position.set(0.04, 2.06, 0.02);
+        const budGeo = new THREE.SphereGeometry(0.025, 10, 8);
+        budGeo.scale(0.8, 1.4, 0.8);
+        const topBud = new THREE.Mesh(budGeo, new THREE.MeshStandardMaterial({ color: 0x86efac, roughness: 0.4 }));
+        topBudGroup.add(topBud);
+        plantGroup.add(topBudGroup);
+
+        // -------------------------------------------------------------
+        // 7. CAPACITIVE SOIL MOISTURE SENSOR (v1.2) - SCALED COMPACT & REALISTIC
+        // (User: "make the sensor of the soil a little bit little")
+        // -------------------------------------------------------------
+        const soilSensorGroup = new THREE.Group();
+        // Inserted visibly into the dark soil
+        soilSensorGroup.position.set(0.24, 0.98, 0.20);
+        soilSensorGroup.rotation.y = 0.35;
+        soilSensorGroup.rotation.x = -0.06;
+        scene.add(soilSensorGroup);
+
+        const sensorTex = createSoilSensorTexture();
+        const sensorPcbMat = new THREE.MeshStandardMaterial({
+            map: sensorTex,
+            roughness: 0.35,
+            metalness: 0.25
+        });
+
+        // Scaled compact sensor blade: 0.10 wide, 0.34 tall
+        const sensorBladeGeo = new THREE.BoxGeometry(0.10, 0.34, 0.010);
+        const sensorBlade = new THREE.Mesh(sensorBladeGeo, sensorPcbMat);
+        sensorBlade.position.y = 0.11;
+        sensorBlade.castShadow = true;
+        soilSensorGroup.add(sensorBlade);
+
+        // Compact IC Timer chip
+        const chipMat = new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.6 });
+        const chip = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.045, 0.008), chipMat);
+        chip.position.set(0, 0.21, 0.007);
+        soilSensorGroup.add(chip);
+
+        // Compact 3-Pin White JST Connector Header
+        const jstMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 });
+        const jst = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.045, 0.035), jstMat);
+        jst.position.set(0, 0.29, 0.007);
+        soilSensorGroup.add(jst);
+
+        // Soil Entry Marker Ring
+        const sensorRingMat = new THREE.MeshBasicMaterial({
+            color: 0x10b981,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.75
+        });
+        const sensorRing = new THREE.Mesh(new THREE.RingGeometry(0.05, 0.08, 16), sensorRingMat);
+        sensorRing.rotation.x = -Math.PI / 2;
+        sensorRing.position.set(0, 0.01, 0);
+        soilSensorGroup.add(sensorRing);
+
+        // -------------------------------------------------------------
+        // 8. WATER RESERVOIR & 5V SUBMERSIBLE PUMP
+        // -------------------------------------------------------------
+        // -------------------------------------------------------------
+        // 8. WATER RESERVOIR & 5V SUBMERSIBLE PUMP (OUTSIDE ARCH)
+        // (User: glass of water outside arch so 180° shade does not cut it; high visibility)
+        // -------------------------------------------------------------
+        const reservoirGroup = new THREE.Group();
+        // Placed cleanly on the left wing of the diorama plinth, outside arch span (x < -1.5)
+        reservoirGroup.position.set(-1.88, 0.22, 0.35);
+        scene.add(reservoirGroup);
+
+        // High-Clarity Heavy Glass Cup (Crisp visibility with cyan tint & solid rims)
+        const cupGeo = new THREE.CylinderGeometry(0.38, 0.32, 0.95, 32);
+        const cupMat = new THREE.MeshPhysicalMaterial({
+            color: 0xe0f2fe, // Crystal clear glass tint
+            transmission: 0.45,
+            opacity: 0.88,
+            transparent: true,
+            roughness: 0.12,
+            metalness: 0.08,
+            ior: 1.5
+        });
+        const cup = new THREE.Mesh(cupGeo, cupMat);
+        cup.position.y = 0.475;
+        cup.castShadow = true;
+        reservoirGroup.add(cup);
+
+        // Solid Glass Rim Collar & Base Ring for defined silhouette
+        const rimCollar = new THREE.Mesh(
+            new THREE.TorusGeometry(0.38, 0.016, 8, 32),
+            new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.2, metalness: 0.1 })
+        );
+        rimCollar.position.y = 0.95;
+        rimCollar.rotation.x = Math.PI / 2;
+        reservoirGroup.add(rimCollar);
+
+        const baseCollar = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.33, 0.35, 0.04, 32),
+            new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.4 })
+        );
+        baseCollar.position.y = 0.02;
+        reservoirGroup.add(baseCollar);
+
+        // Water Volume inside cup (Vivid aquatic blue, high opacity & surface meniscus)
+        const waterGeo = new THREE.CylinderGeometry(0.36, 0.31, 0.72, 32);
+        const waterMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0284c7, // Vibrant aquatic blue
+            transmission: 0.22,
+            opacity: 0.85,
+            transparent: true,
+            roughness: 0.04,
+            ior: 1.33
+        });
+        const water = new THREE.Mesh(waterGeo, waterMat);
+        water.position.y = 0.40;
+        reservoirGroup.add(water);
+
+        const waterSurface = new THREE.Mesh(
+            new THREE.CircleGeometry(0.355, 32),
+            new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.2 })
+        );
+        waterSurface.position.y = 0.76;
+        waterSurface.rotation.x = -Math.PI / 2;
+        reservoirGroup.add(waterSurface);
+
+        // 5V Mini Submersible Water Pump inside cup
+        const pumpMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.2 });
+        const pumpBody = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.22), pumpMat);
+        pumpBody.position.set(0, 0.11, 0);
+        pumpBody.castShadow = true;
+        reservoirGroup.add(pumpBody);
+
+        // Pump outlet barb pointing DOWNWARDS into floor grommet
+        const pumpBarb = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.026, 0.028, 0.08, 12),
+            new THREE.MeshStandardMaterial({ color: 0x475569 })
+        );
+        pumpBarb.position.set(0.04, 0.04, 0);
+        reservoirGroup.add(pumpBarb);
+
+        // -------------------------------------------------------------
+        // 9. UNDERFLOOR WATER HOSE & ELEVATED DRIP EMITTER NOZZLE
+        // (User: crawl outside the pot; elevate hose nozzle so water dripping is clearly visible)
+        // -------------------------------------------------------------
+        const hoseGroup = new THREE.Group();
+        scene.add(hoseGroup);
+
+        // 1) Clear Silicone Tubing Running From Pump -> Below Floor -> Emerging at Outside of Pot -> Up Over Rim -> Elevated Nozzle
+        const hoseCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-1.88, 0.26, 0.35),   // Connected to pump bottom outlet
+            new THREE.Vector3(-1.88, 0.22, 0.35),   // Enters diorama floor grommet A
+            new THREE.Vector3(-1.88, 0.08, 0.35),   // Running BELOW the floor deck
+            new THREE.Vector3(-1.40, 0.08, 0.30),   // Routed underneath wood floor
+            new THREE.Vector3(-0.95, 0.08, 0.26),   // Continuing beneath baseboard
+            new THREE.Vector3(-0.54, 0.08, 0.22),   // Reaches area below vase
+            new THREE.Vector3(-0.54, 0.22, 0.22),   // EMERGES from floor grommet B (strictly outside pot!)
+            new THREE.Vector3(-0.58, 0.50, 0.24),   // Rises strictly along vase EXTERIOR wall
+            new THREE.Vector3(-0.64, 0.85, 0.24),   // Crawling up vase outer surface
+            new THREE.Vector3(-0.62, 1.12, 0.22),   // Outside vase top rim
+            new THREE.Vector3(-0.48, 1.35, 0.20),   // Arches HIGH over the vase rim
+            new THREE.Vector3(-0.32, 1.34, 0.18),   // Loops over the rim towards soil
+            new THREE.Vector3(-0.16, 1.28, 0.16)    // ELEVATED HOSE OUTLET NOZZLE TIP (0.28m above soil!)
+        ]);
+
+        const hoseGeo = new THREE.TubeGeometry(hoseCurve, 64, 0.024, 12, false);
+        const hoseMat = new THREE.MeshPhysicalMaterial({
+            color: 0x94a3b8,
+            transmission: 0.90,
+            transparent: true,
+            opacity: 0.65,
+            roughness: 0.15,
+            ior: 1.46
+        });
+        const waterHose = new THREE.Mesh(hoseGeo, hoseMat);
+        waterHose.castShadow = true;
+        hoseGroup.add(waterHose);
+
+        // 2) Visible Water Column inside hose (becomes vivid blue when pumping)
+        const waterCoreMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.45
+        });
+        const waterCoreGeo = new THREE.TubeGeometry(hoseCurve, 64, 0.016, 8, false);
+        const waterCore = new THREE.Mesh(waterCoreGeo, waterCoreMat);
+        hoseGroup.add(waterCore);
+
+        // 3) High-Visibility Brass Drip Irrigation Nozzle (Elevated at y = 1.28, pointing down at soil)
+        const nozzleMat = new THREE.MeshStandardMaterial({
+            color: 0xf59e0b, // Brass drip nozzle
+            metalness: 0.85,
+            roughness: 0.25
+        });
+        const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.016, 0.07, 12), nozzleMat);
+        nozzle.position.set(-0.16, 1.28, 0.16);
+        nozzle.rotation.z = 0.55;
+        nozzle.rotation.x = -0.25;
+        hoseGroup.add(nozzle);
+
+        // 4) Animated Droplets & Visible Water Stream pouring from the elevated nozzle into the soil (across 0.28m gap!)
+        const waterStreamMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.0
+        });
+        const waterStreamGeo = new THREE.CylinderGeometry(0.008, 0.016, 0.26, 8);
+        const waterStream = new THREE.Mesh(waterStreamGeo, waterStreamMat);
+        waterStream.position.set(-0.13, 1.14, 0.14);
+        waterStream.rotation.z = 0.18;
+        hoseGroup.add(waterStream);
+
+        // Individual falling droplet spheres cascading through the air
+        const dripDrops = [];
+        const dropMat = new THREE.MeshStandardMaterial({
+            color: 0x38bdf8,
+            roughness: 0.1,
+            metalness: 0.4
+        });
+        for (let d = 0; d < 6; d++) {
+            const drop = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), dropMat);
+            drop.position.set(-0.14, 1.26 - d * 0.04, 0.15);
+            drop.visible = false;
+            hoseGroup.add(drop);
+            dripDrops.push(drop);
+        }
+
+        // Hanging static glistening droplet at nozzle tip (visible even when idle)
+        const hangingDrop = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 8), dropMat);
+        hangingDrop.position.set(-0.15, 1.25, 0.16);
+        hoseGroup.add(hangingDrop);
+
+        // -------------------------------------------------------------
+        // 10. THE BRAIN: ESP32 MICROCONTROLLER ENCLOSURE & WIRINGS
+        // -------------------------------------------------------------
+        const espGroup = new THREE.Group();
+        espGroup.position.set(1.35, 0.22, 0.65);
+        scene.add(espGroup);
+
+        const encMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.35, roughness: 0.4 });
+        const encBody = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.28, 0.52), encMat);
+        encBody.position.y = 0.14;
+        encBody.castShadow = true;
+        espGroup.add(encBody);
+
+        const encLid = new THREE.Mesh(
+            new THREE.BoxGeometry(0.68, 0.03, 0.48),
+            new THREE.MeshPhysicalMaterial({ color: 0x334155, transmission: 0.55, opacity: 0.75, transparent: true, roughness: 0.25 })
+        );
+        encLid.position.y = 0.285;
+        espGroup.add(encLid);
+
+        const espPcb = new THREE.Mesh(
+            new THREE.BoxGeometry(0.48, 0.015, 0.28),
+            new THREE.MeshStandardMaterial({ color: 0x0f5132, roughness: 0.4 })
+        );
+        espPcb.position.set(0, 0.20, 0);
+        espGroup.add(espPcb);
+
+        const shield = new THREE.Mesh(
+            new THREE.BoxGeometry(0.18, 0.03, 0.16),
+            new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.9, roughness: 0.2 })
+        );
+        shield.position.set(-0.08, 0.22, 0);
+        espGroup.add(shield);
+
+        const ledPwr = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.01, 8), new THREE.MeshBasicMaterial({ color: 0x22c55e }));
+        ledPwr.position.set(0.14, 0.22, 0.06);
+        espGroup.add(ledPwr);
+
+        const ledWifiMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+        const ledWifi = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.01, 8), ledWifiMat);
+        ledWifi.position.set(0.14, 0.22, -0.06);
+        espGroup.add(ledWifi);
+
+        // Power Cable
+        const pwrCable = new THREE.Mesh(
+            new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+                new THREE.Vector3(1.78, 0.36, 0.65),
+                new THREE.Vector3(2.1, 0.32, 0.65),
+                new THREE.Vector3(2.4, 0.22, 0.65),
+                new THREE.Vector3(2.7, 0.12, 0.65)
+            ]), 20, 0.018, 8, false),
+            new THREE.MeshStandardMaterial({ color: 0x111827 })
+        );
+        scene.add(pwrCable);
+
+        // Multi-Circuit Wiring Conduits
+        const wiresGroup = new THREE.Group();
+        scene.add(wiresGroup);
+
+        function createRibbonWire(points, colorHex, radius = 0.009) {
+            const curve = new THREE.CatmullRomCurve3(points);
+            const geo = new THREE.TubeGeometry(curve, 36, radius, 8, false);
+            const mat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.65, metalness: 0.1 });
+            const mesh = new THREE.Mesh(geo, mat);
+            wiresGroup.add(mesh);
+            return mesh;
+        }
+
+        // Soil Sensor 3-Wire Ribbon (Red, Black, Yellow)
+        // (Strictly routes OVER pot rim and crawls DOWN the exterior wall of the pot, NEVER through it!)
+        const soilWireColors = [0xef4444, 0x111827, 0xeab308];
+        [-0.012, 0, 0.012].forEach((offset, idx) => {
+            createRibbonWire([
+                new THREE.Vector3(0.24 + offset, 1.28, 0.20),
+                new THREE.Vector3(0.50 + offset, 1.24, 0.22),
+                new THREE.Vector3(0.74 + offset, 1.12, 0.20),  // Over pot rim strictly on exterior
+                new THREE.Vector3(0.70 + offset, 0.80, 0.20),  // Crawling down pot exterior wall
+                new THREE.Vector3(0.64 + offset, 0.50, 0.20),  // Crawling down pot exterior wall
+                new THREE.Vector3(0.58 + offset, 0.23, 0.22),  // Reaches baseboard floor outside pot
+                new THREE.Vector3(0.82 + offset, 0.23, 0.38),  // Across baseboard floor
+                new THREE.Vector3(1.05 + offset, 0.28, 0.55),  // Approaching ESP32
+                new THREE.Vector3(1.25 + offset, 0.30, 0.65)   // Enters ESP32 enclosure
+            ], soilWireColors[idx]);
+        });
+
+        // Servo 3-Wire Ribbon (Brown, Red, Orange)
+        const servoWireColors = [0x78350f, 0xef4444, 0xf97316];
+        [-0.012, 0, 0.012].forEach((offset, idx) => {
+            createRibbonWire([
+                new THREE.Vector3(1.5, 1.72, 0.45 + offset),
+                new THREE.Vector3(1.5, 1.35, 0.45 + offset),
+                new THREE.Vector3(1.5, 0.85, 0.45 + offset),
+                new THREE.Vector3(1.48, 0.32, 0.48 + offset),
+                new THREE.Vector3(1.35, 0.28, 0.52 + offset),
+                new THREE.Vector3(1.22, 0.32, 0.56 + offset)
+            ], servoWireColors[idx]);
+        });
+
+        // Pump 2-Wire Cable (Red, Black) - Routes from cup outside arch along floor to ESP32
+        const pumpWireColors = [0xef4444, 0x0f172a];
+        [-0.01, 0.01].forEach((offset, idx) => {
+            createRibbonWire([
+                new THREE.Vector3(-1.88 + offset, 0.34, 0.35),
+                new THREE.Vector3(-1.75 + offset, 0.23, 0.45),
+                new THREE.Vector3(-1.20 + offset, 0.23, 0.60),
+                new THREE.Vector3(-0.40 + offset, 0.23, 0.70),
+                new THREE.Vector3(0.40 + offset, 0.23, 0.72),
+                new THREE.Vector3(1.05 + offset, 0.28, 0.68)
+            ], pumpWireColors[idx], 0.011);
+        });
+
+        // Light (LDR) & DHT11 Apex Sensor Bundle
+        const apexWireColors = [0x3b82f6, 0x10b981, 0xf59e0b, 0xef4444];
+        apexWireColors.forEach((col, idx) => {
+            const zOff = -0.9 + (idx * 0.015);
+            createRibbonWire([
+                new THREE.Vector3(0.0, 2.68, zOff),
+                new THREE.Vector3(0.65, 2.45, zOff),
+                new THREE.Vector3(1.25, 1.85, zOff),
+                new THREE.Vector3(1.48, 1.15, zOff),
+                new THREE.Vector3(1.48, 0.30, zOff),
+                new THREE.Vector3(1.42, 0.24, -0.2),
+                new THREE.Vector3(1.38, 0.24, 0.3),
+                new THREE.Vector3(1.35, 0.32, 0.42)
+            ], col, 0.008);
+        });
+
+        // -------------------------------------------------------------
+        // 11. LIGHT (LDR) & DHT11 SENSOR (AT APEX RIDGE)
+        // -------------------------------------------------------------
+        const sensorApexGroup = new THREE.Group();
+        sensorApexGroup.position.set(0, 2.68, 0);
+        scene.add(sensorApexGroup);
+
+        const apexPcb = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.02, 0.22), new THREE.MeshStandardMaterial({ color: 0x1e3a5f, roughness: 0.5 }));
+        sensorApexGroup.add(apexPcb);
+
+        const dhtBody = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.08), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 }));
+        dhtBody.position.set(-0.05, 0.09, 0);
+        sensorApexGroup.add(dhtBody);
+
+        const ldrBase = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.04, 12), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 }));
+        ldrBase.position.set(0.06, 0.03, 0);
+        sensorApexGroup.add(ldrBase);
+
+        const ldrFace = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.005, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        ldrFace.position.set(0.06, 0.052, 0);
+        sensorApexGroup.add(ldrFace);
+
+        // -------------------------------------------------------------
+        // 12. RAYCASTER DIRECT 3D INTERACTION & ON-DEMAND LABELS
+        // (Hover/Click directly on 3D components to inspect; labels toggleable!)
+        // -------------------------------------------------------------
+        const componentsData = [
+            {
+                id: 'sensor',
+                name: 'Capacitive Soil Moisture Sensor (v1.2)',
+                badge: 'Analog Sensor',
+                desc: 'Corrosion-resistant capacitive PCB probe inserted directly into the brown potting loam. Measures soil dielectric permittivity without galvanic metal erosion.',
+                stats: 'Reading: 68% (Adequately Moist) | Pin: A0 (ESP32)',
+                pos: new THREE.Vector3(0.24, 1.25, 0.20),
+                icon: '🌱'
+            },
+            {
+                id: 'hose',
+                name: 'Elevated Hose Nozzle & Drip Irrigation',
+                badge: 'Irrigation System',
+                desc: 'Silicone tubing runs underfloor, crawls up the outside pot wall, and arches over the rim. The nozzle is elevated 0.28m above the soil with visible falling droplets.',
+                stats: 'Elevation: +0.28m Air Gap | Flow: 1.2 L/min | Droplets: Visible',
+                pos: new THREE.Vector3(-0.16, 1.28, 0.16),
+                icon: '➰'
+            },
+            {
+                id: 'servo',
+                name: 'SG90 Micro Servo & Pull Cable',
+                badge: 'Mechanical Actuator',
+                desc: '9g micro servo motor mounted on the arch frame. Rotating horn pulls high-tensile fishing line through eyelets to slide the shade canopy open/closed.',
+                stats: 'Torque: 1.8 kg-cm | PWM Signal: GPIO 18',
+                pos: new THREE.Vector3(1.5, 2.05, 0.45),
+                icon: '⚙️'
+            },
+            {
+                id: 'shade',
+                name: 'Auto-Shade System (180° Mesh Canopy)',
+                badge: 'Canopy Mesh',
+                desc: 'Whole 180-degree curved agricultural shade cloth spanning arch base to base. Protects sensitive orchid foliage from harsh direct sun when light threshold exceeds 2500 Lux.',
+                stats: 'Coverage: Full 180° Arch | 70% UV Cut | State: Deployed',
+                pos: new THREE.Vector3(0.0, 2.68, 0),
+                icon: '🛡️'
+            },
+            {
+                id: 'reservoir',
+                name: 'Water Reservoir & 5V Mini Pump',
+                badge: 'Water Supply',
+                desc: 'Crystal-clear reservoir glass cup with blue water volume placed outside the arch frame so the 180° shade does not cut through it. Houses submerged 5V mini pump.',
+                stats: 'Position: Outside Arch Frame | Level: 85% Full | 5V DC',
+                pos: new THREE.Vector3(-1.88, 0.85, 0.35),
+                icon: '💧'
+            },
+            {
+                id: 'esp32',
+                name: 'The Brain: ESP32 Microcontroller',
+                badge: 'IoT Controller',
+                desc: 'Dual-core ESP32 in custom vented project enclosure. Executes automated plant care rules, sensor ADC sampling, Wi-Fi telemetry, and motor control.',
+                stats: 'MCU: ESP32 240MHz | Telemetry: 10Hz MQTT',
+                pos: new THREE.Vector3(1.35, 0.65, 0.65),
+                icon: '🧠'
+            },
+            {
+                id: 'apex',
+                name: 'Light Sensor (LDR) & DHT11 Temp/Humidity',
+                badge: 'Telemetry Node',
+                desc: 'Apex-mounted environmental sensor module. Monitors ambient sunlight intensity, ambient temperature, and relative humidity above the canopy.',
+                stats: 'Light: 780 Lux (Good) | Temp: 26.5°C | Hum: 72%',
+                pos: new THREE.Vector3(0, 2.85, 0),
+                icon: '☀️'
+            },
+            {
+                id: 'plant',
+                name: 'Orchid in Potting Soil',
+                badge: 'Botanical Subject',
+                desc: 'Delicate Phalaenopsis orchid in rich brown organic potting soil. Features authentic rounded white petals with vibrant fuchsia lip, supported by bamboo stake.',
+                stats: 'Blossoms: 4 Natural Open Blooms | Medium: Rich Loam Mix',
+                pos: new THREE.Vector3(0.1, 1.75, 0.05),
+                icon: '🌸'
+            }
+        ];
+
+        // 1) On-Demand Floating Callout Labels (Hidden by default, shown when toggled ON!)
+        const labelElements = [];
+        const labelContainer = document.getElementById("labels-container");
+        const inspectorCard = document.getElementById("inspector-card");
+        let allLabelsVisible = false;
+        let isCardPinned = false;
+        let currentInspectedItem = null;
+
+        componentsData.forEach(item => {
+            const badge = document.createElement("div");
+            badge.className = "component-label";
+            badge.innerHTML = `<span class="label-dot"></span><span>${item.icon} ${item.name.split('(')[0].trim()}</span>`;
+            badge.setAttribute("title", item.name);
+            labelContainer.appendChild(badge);
+
+            badge.addEventListener("mouseenter", () => {
+                if (!isCardPinned) showInspector(item);
+            });
+            badge.addEventListener("mouseleave", () => {
+                if (!isCardPinned) hideInspector();
+            });
+            badge.addEventListener("click", (e) => {
+                e.stopPropagation();
+                isCardPinned = true;
+                showInspector(item);
+                focusComponent(item.id);
+            });
+
+            labelElements.push({ el: badge, pos: item.pos, data: item });
+        });
+
+        function toggleAllLabels() {
+            allLabelsVisible = !allLabelsVisible;
+            labelElements.forEach(({ el }) => {
+                el.style.display = allLabelsVisible ? "flex" : "none";
+            });
+            const btn = document.getElementById("btn-labels");
+            btn.innerHTML = allLabelsVisible ? "🏷️ All Labels: ON" : "🏷️ All Labels: OFF";
+            btn.classList.toggle("active", allLabelsVisible);
+            showToast(allLabelsVisible ? "3D Labels visible across prototype" : "3D Labels hidden (Hover/click 3D items directly)");
+        }
+
+        // 2) Raycasting Directly on 3D Prototype Meshes
+        const interactiveMeshes = [];
+        function registerInteractive(obj, compId) {
+            obj.traverse(child => {
+                if (child.isMesh) {
+                    child.userData.componentId = compId;
+                    interactiveMeshes.push(child);
+                }
+            });
+        }
+
+        registerInteractive(soilSensorGroup, 'sensor');
+        registerInteractive(hoseGroup, 'hose');
+        registerInteractive(servoGroup, 'servo');
+        registerInteractive(shadeSystemGroup, 'shade');
+        registerInteractive(reservoirGroup, 'reservoir');
+        registerInteractive(espGroup, 'esp32');
+        registerInteractive(sensorApexGroup, 'apex');
+        registerInteractive(plantGroup, 'plant');
+
+        const raycaster = new THREE.Raycaster();
+        const pointerCoord = new THREE.Vector2(-999, -999);
+        let currentHoveredId = null;
+
+        window.addEventListener('pointermove', (e) => {
+            if (e.target.closest('#blueprint-header') || e.target.closest('#mobile-dashboard') || e.target.closest('#bottom-panel') || e.target.closest('#inspector-card')) {
+                return;
+            }
+            pointerCoord.x = (e.clientX / window.innerWidth) * 2 - 1;
+            pointerCoord.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(pointerCoord, camera);
+            const hits = raycaster.intersectObjects(interactiveMeshes, false);
+
+            if (hits.length > 0) {
+                let foundId = null;
+                for (let i = 0; i < hits.length; i++) {
+                    if (hits[i].object.userData && hits[i].object.userData.componentId) {
+                        foundId = hits[i].object.userData.componentId;
+                        break;
+                    }
+                }
+                if (foundId) {
+                    document.body.style.cursor = 'pointer';
+                    if (!isCardPinned && currentHoveredId !== foundId) {
+                        currentHoveredId = foundId;
+                        const item = componentsData.find(c => c.id === foundId);
+                        if (item) showInspector(item);
+                    }
+                    return;
+                }
+            }
+
+            document.body.style.cursor = 'default';
+            if (!isCardPinned && currentHoveredId !== null) {
+                currentHoveredId = null;
+                hideInspector();
+            }
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target.closest('#blueprint-header') || e.target.closest('#mobile-dashboard') || e.target.closest('#bottom-panel') || e.target.closest('#inspector-card')) {
+                return;
+            }
+            pointerCoord.x = (e.clientX / window.innerWidth) * 2 - 1;
+            pointerCoord.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(pointerCoord, camera);
+            const hits = raycaster.intersectObjects(interactiveMeshes, false);
+
+            if (hits.length > 0) {
+                for (let i = 0; i < hits.length; i++) {
+                    const id = hits[i].object.userData ? hits[i].object.userData.componentId : null;
+                    if (id) {
+                        const item = componentsData.find(c => c.id === id);
+                        if (item) {
+                            isCardPinned = true;
+                            showInspector(item);
+                            focusComponent(item.id);
+                            return;
+                        }
+                    }
+                }
+            }
+            closeInspector();
+        });
+
+        function showInspector(item) {
+            currentInspectedItem = item;
+            document.getElementById("insp-badge").innerText = item.badge;
+            document.getElementById("insp-name").innerText = `${item.icon} ${item.name}`;
+            document.getElementById("insp-desc").innerText = item.desc;
+            document.getElementById("insp-stats").innerText = item.stats;
+            updateInspectorPosition();
+            inspectorCard.classList.add("visible");
+        }
+
+        function updateInspectorPosition() {
+            if (!currentInspectedItem) return;
+            const tempV = currentInspectedItem.pos.clone().project(camera);
+            if (tempV.z < 1) {
+                const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+                const y = (-tempV.y * 0.5 + 0.5) * window.innerHeight;
+                const cardW = 260;
+                const clampedX = Math.max(cardW / 2 + 15, Math.min(window.innerWidth - cardW / 2 - 15, x));
+                const clampedY = Math.max(140, Math.min(window.innerHeight - 50, y));
+                inspectorCard.style.left = `${clampedX}px`;
+                inspectorCard.style.top = `${clampedY - 14}px`;
+            }
+        }
+
+        function hideInspector() {
+            if (!isCardPinned) {
+                inspectorCard.classList.remove("visible");
+                currentInspectedItem = null;
+            }
+        }
+
+        function closeInspector() {
+            isCardPinned = false;
+            inspectorCard.classList.remove("visible");
+            currentInspectedItem = null;
+        }
+
+        function updateLabelsOverlay() {
+            if (allLabelsVisible) {
+                labelElements.forEach(({ el, pos }) => {
+                    const tempV = pos.clone().project(camera);
+                    if (tempV.z < 1) {
+                        const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+                        const y = (-tempV.y * 0.5 + 0.5) * window.innerHeight;
+                        el.style.left = `${x}px`;
+                        el.style.top = `${y}px`;
+                        el.style.display = "flex";
+                    } else {
+                        el.style.display = "none";
+                    }
+                });
+            }
+            if (inspectorCard.classList.contains("visible")) {
+                updateInspectorPosition();
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 13. INTERACTIVE SYSTEM LOGIC & ANIMATIONS
+        // -------------------------------------------------------------
+        let isWatering = false;
+        let isShadeDeployed = true;
+        let isHarshSun = false;
+        let autoMode = true;
+        let isVacationMode = false;
+        let currentSoilMoisture = 68;
+        let vacationCheckInterval = null;
+
+        let toastTimeout;
+        function showToast(msg) {
+            const toast = document.getElementById("status-toast");
+            toast.innerText = msg;
+            toast.classList.add("show");
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3500);
+        }
+
+        // Deploy / Retract Auto-Shade (Whole 180° Arch)
+        function toggleShade() {
+            isShadeDeployed = !isShadeDeployed;
+            targetClothProgress = isShadeDeployed ? 1.0 : 0.0;
+
+            const btnText = document.getElementById("btn-shade-text");
+            btnText.innerText = isShadeDeployed ? "☀️ Retract 180° Shade" : "🛡️ Deploy 180° Shade";
+
+            const valShade = document.getElementById("val-shade");
+            valShade.innerText = isShadeDeployed ? "Deployed" : "Retracted";
+            valShade.style.color = isShadeDeployed ? "#38bdf8" : "#94a3b8";
+
+            showToast(isShadeDeployed ?
+                "Servo SG90 rotating: Cable pulled to deploy whole 180° canopy" :
+                "Servo SG90 reversing: 180° canopy retracted"
+            );
+        }
+
+        // Run Pump 5s (Water Plant with visible water flow)
+        let waterCountdown = 0;
+        function triggerWatering() {
+            if (isWatering) return;
+            isWatering = true;
+            waterCountdown = 5;
+
+            const btn = document.getElementById("btn-water");
+            btn.disabled = true;
+
+            const cardSoil = document.getElementById("card-soil");
+            cardSoil.classList.add("highlight");
+
+            // Make water visible in hose and stream active
+            waterCoreMat.color.setHex(0x0284c7);
+            waterCoreMat.opacity = 0.85;
+            waterStreamMat.opacity = 0.75;
+
+            showToast("5V Submersible Pump running: Water flowing through underfloor hose to nozzle (5s)...");
+
+            const interval = setInterval(() => {
+                waterCountdown--;
+                btn.innerHTML = `<span>💧 Irrigating... (${waterCountdown}s)</span>`;
+                if (waterCountdown <= 0) {
+                    clearInterval(interval);
+                    isWatering = false;
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>💧 Run Pump 5s (Water Plant)</span>`;
+                    cardSoil.classList.remove("highlight");
+
+                    waterCoreMat.color.setHex(0x38bdf8);
+                    waterCoreMat.opacity = 0.45;
+                    waterStreamMat.opacity = 0.0;
+
+                    currentSoilMoisture = 86;
+                    const val = document.getElementById("val-soil");
+                    val.innerText = "86%";
+                    val.style.color = "#10b981";
+                    showToast("Watering complete! Soil moisture restored to 86%.");
+                }
+            }, 1000);
+        }
+
+        // Simulate Harsh Sun
+        function toggleSunIntensity() {
+            isHarshSun = !isHarshSun;
+            const btnText = document.getElementById("sun-btn-text");
+            const valSun = document.getElementById("val-sun");
+
+            if (isHarshSun) {
+                sunLight.intensity = 2.4;
+                sunLight.color.setHex(0xfff3cc);
+                btnText.innerText = "⛅ Normal Sun";
+                valSun.innerText = "HARSH";
+                valSun.style.color = "#f59e0b";
+                showToast("Harsh direct sunlight detected (LDR peak)");
+
+                if ((autoMode || isVacationMode) && !isShadeDeployed) {
+                    setTimeout(() => { toggleShade(); }, 800);
+                }
+            } else {
+                sunLight.intensity = 1.25;
+                sunLight.color.setHex(0xfffaed);
+                btnText.innerText = "🌤️ Harsh Sun";
+                valSun.innerText = "Normal";
+                valSun.style.color = "#ffffff";
+                showToast("Normal ambient light restored");
+
+                if (isVacationMode && isShadeDeployed) {
+                    setTimeout(() => { toggleShade(); }, 1200);
+                }
+            }
+        }
+
+        function toggleAutoMode() {
+            autoMode = !autoMode;
+            const btn = document.getElementById("btn-auto-mode");
+            btn.innerHTML = `<span>🤖 Auto: ${autoMode ? "ON" : "OFF"}</span>`;
+            btn.style.borderColor = autoMode ? "#10b981" : "rgba(255,255,255,0.2)";
+            showToast(`Auto System Logic ${autoMode ? "ENABLED: Auto rules active" : "DISABLED: Manual mode"}`);
+        }
+
+        // Vacation & Away Care Mode (Autonomous Water & Shade for busy/away owners)
+        function toggleVacationMode() {
+            isVacationMode = !isVacationMode;
+            const btn = document.getElementById("btn-vacation");
+            const btnText = document.getElementById("btn-vacation-text");
+            const badgeAway = document.getElementById("badge-away");
+            const note = document.getElementById("vacation-note");
+
+            if (isVacationMode) {
+                btn.classList.add("active");
+                btnText.innerHTML = "✈️ Away Mode: ACTIVE (Auto-Care)";
+                badgeAway.style.display = "inline-flex";
+                note.innerHTML = "🟢 <strong>Auto-Care Active:</strong> Automatically irrigates when dry & deploys shade in harsh sun.";
+                note.style.color = "#34d399";
+                showToast("✈️ Away & Vacation Mode ACTIVATED: Bantay Halaman is now in full autonomous care!");
+
+                // If harsh sun is currently active, deploy shade immediately
+                if (isHarshSun && !isShadeDeployed) {
+                    setTimeout(() => { toggleShade(); }, 600);
+                }
+
+                // Start autonomous watchdog timer to monitor soil moisture & sun while owner is busy
+                if (!vacationCheckInterval) {
+                    vacationCheckInterval = setInterval(runVacationAutoCare, 4000);
+                }
+            } else {
+                btn.classList.remove("active");
+                btnText.innerHTML = "✈️ Away / Vacation Mode: OFF";
+                badgeAway.style.display = "none";
+                note.innerHTML = "Auto-cares for water & shade when you are busy or out of town";
+                note.style.color = "#94a3b8";
+                showToast("✈️ Away / Vacation Mode DEACTIVATED: Switched back to standard controls.");
+
+                if (vacationCheckInterval) {
+                    clearInterval(vacationCheckInterval);
+                    vacationCheckInterval = null;
+                }
+            }
+        }
+
+        function runVacationAutoCare() {
+            if (!isVacationMode) return;
+
+            // 1) Harsh Sun autonomous protection
+            if (isHarshSun && !isShadeDeployed) {
+                showToast("✈️ Away Auto-Care: Harsh sun detected -> Deploying 180° shade automatically!");
+                toggleShade();
+                return;
+            }
+
+            // 2) Soil moisture autonomous drying & watering
+            if (!isWatering && currentSoilMoisture > 38) {
+                currentSoilMoisture -= 5;
+                const valSoil = document.getElementById("val-soil");
+                if (valSoil) {
+                    valSoil.innerText = `${currentSoilMoisture}%`;
+                    if (currentSoilMoisture < 50) {
+                        valSoil.style.color = "#f59e0b";
+                    }
+                }
+            }
+
+            if (currentSoilMoisture <= 45 && !isWatering) {
+                showToast(`✈️ Away Auto-Care: Soil moisture dry (${currentSoilMoisture}%) -> Running pump 5s!`);
+                triggerWatering();
+                currentSoilMoisture = 86;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 14. SMOOTH CAMERA FOCUS PRESETS
+        // -------------------------------------------------------------
+        let targetCamPos = camera.position.clone();
+        let targetCamTarget = controls.target.clone();
+        let isTransitioningCamera = false;
+
+        const cameraViews = {
+            'overview': {
+                pos: new THREE.Vector3(5.2, 4.4, 5.4),
+                target: new THREE.Vector3(0, 1.15, 0)
+            },
+            'orchid': {
+                pos: new THREE.Vector3(0.1, 1.95, 1.4),
+                target: new THREE.Vector3(0.1, 1.70, 0.05)
+            },
+            'soil-sensor': {
+                pos: new THREE.Vector3(1.1, 1.5, 1.1),
+                target: new THREE.Vector3(0.24, 1.1, 0.20)
+            },
+            'hose-emitter': {
+                pos: new THREE.Vector3(-1.1, 1.70, 1.0),
+                target: new THREE.Vector3(-0.16, 1.25, 0.14)
+            },
+            'servo': {
+                pos: new THREE.Vector3(2.4, 2.2, 1.4),
+                target: new THREE.Vector3(1.3, 2.0, 0.45)
+            },
+            'pump': {
+                pos: new THREE.Vector3(-3.2, 1.7, 1.4),
+                target: new THREE.Vector3(-1.8, 0.65, 0.35)
+            },
+            'esp32': {
+                pos: new THREE.Vector3(2.6, 1.4, 1.5),
+                target: new THREE.Vector3(1.2, 0.4, 0.6)
+            }
+        };
+
+        function focusCamera(viewKey, btnEl) {
+            document.querySelectorAll('#bottom-panel .camera-btn').forEach(b => {
+                if (b !== document.getElementById('btn-labels')) b.classList.remove('active');
+            });
+            if (btnEl) btnEl.classList.add('active');
+
+            const view = cameraViews[viewKey];
+            if (view) {
+                targetCamPos.copy(view.pos);
+                targetCamTarget.copy(view.target);
+                isTransitioningCamera = true;
+            }
+        }
+
+        function focusComponent(compId) {
+            const map = {
+                'sensor': 'soil-sensor',
+                'plant': 'orchid',
+                'hose': 'hose-emitter',
+                'servo': 'servo',
+                'reservoir': 'pump',
+                'esp32': 'esp32'
+            };
+            if (map[compId]) {
+                focusCamera(map[compId]);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 15. MAIN RENDER LOOP & REAL-TIME ANIMATIONS
+        // -------------------------------------------------------------
+        let clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsed = clock.getElapsedTime();
+
+            // Smooth Camera Lerp
+            if (isTransitioningCamera) {
+                camera.position.lerp(targetCamPos, 0.08);
+                controls.target.lerp(targetCamTarget, 0.08);
+                if (camera.position.distanceTo(targetCamPos) < 0.03) {
+                    camera.position.copy(targetCamPos);
+                    controls.target.copy(targetCamTarget);
+                    isTransitioningCamera = false;
+                }
+            }
+
+            // Auto-Shade Cloth & Servo Horn Rotation
+            if (Math.abs(shadeClothProgress - targetClothProgress) > 0.005) {
+                shadeClothProgress += (targetClothProgress - shadeClothProgress) * 0.05;
+                rebuildShadeCloth(shadeClothProgress);
+                hornGroup.rotation.y = -shadeClothProgress * Math.PI * 0.65;
+            }
+
+            // Water Flow Animation: Drip droplets falling from the elevated hose nozzle (across 0.25m gap)
+            if (isWatering) {
+                dripDrops.forEach((drop, i) => {
+                    drop.visible = true;
+                    const offsetSpeed = (elapsed * 4.2 + i * 0.18) % 1.0;
+                    drop.position.y = 1.26 - offsetSpeed * 0.25;
+                    drop.position.x = -0.14 - offsetSpeed * 0.015;
+                });
+                // Wet soil ring expansion
+                wetRingMat.opacity = Math.min(0.70, wetRingMat.opacity + 0.015);
+                const scaleW = 1.0 + Math.sin(elapsed * 5.0) * 0.08;
+                wetRing.scale.set(scaleW, scaleW, scaleW);
+            } else {
+                dripDrops.forEach(drop => drop.visible = false);
+                if (wetRingMat.opacity > 0.0) wetRingMat.opacity -= 0.002;
+            }
+
+            // Subtle pulsing highlight ring on soil moisture sensor
+            const pulseScale = 1.0 + Math.sin(elapsed * 3.5) * 0.12;
+            sensorRing.scale.set(pulseScale, pulseScale, pulseScale);
+            sensorRingMat.opacity = 0.5 + Math.sin(elapsed * 3.5) * 0.25;
+
+            // ESP32 Telemetry blinking LED
+            ledWifiMat.color.setHex((Math.floor(elapsed * 3) % 2 === 0) ? 0x38bdf8 : 0x0f172a);
+
+            controls.update();
+            updateLabelsOverlay();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Window resize handler
+        window.addEventListener("resize", () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>
